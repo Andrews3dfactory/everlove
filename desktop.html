@@ -3,359 +3,53 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Everlove</title>
+  <title>Everlove - Desktop Version</title>
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background: linear-gradient(135deg, #ffe3ec, #ffcad4);
       color: #4a2e2e;
-      text-align: center;
-      padding: 2em;
       margin: 0;
+      padding: 2em;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      text-align: center;
     }
-
     h1 {
-      font-size: 3em;
-      margin-bottom: 0.2em;
+      font-size: 3rem;
+      margin-bottom: 0.3em;
     }
-
     .input-section {
       margin: 2em 0;
+      width: 500px;
     }
-
     input[type="date"], input[type="file"] {
-      padding: 0.5em;
-      font-size: 1em;
+      padding: 0.8em 1em;
+      font-size: 1.3rem;
       border-radius: 0.5em;
       border: none;
-    }
-
-    .carousel-wrapper {
-      position: relative;
-      max-width: 400px;
-      margin: auto;
-      user-select: none;
-    }
-
-    .carousel {
-      display: flex;
-      overflow: hidden;
-      scroll-behavior: smooth;
-      gap: 1em;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .carousel img {
-      min-width: 100%;
-      max-height: 300px;
-      object-fit: cover;
-      border-radius: 1em;
-      transition: transform 0.5s ease-in-out, border 0.3s ease;
-      cursor: pointer;
+      width: 100%;
       box-sizing: border-box;
     }
-
-    .carousel img.selected {
-      border: 5px solid #ff6699;
-      transform: scale(1.05);
-      z-index: 2;
-      position: relative;
-    }
-
-    .arrow {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      background-color: rgba(255, 255, 255, 0.7);
-      border: none;
-      font-size: 2em;
-      cursor: pointer;
-      padding: 0 0.5em;
-      border-radius: 0.5em;
-      user-select: none;
-      z-index: 5;
-      display: none; /* Hide by default */
-    }
-
-    .arrow.left {
-      left: 0;
-    }
-
-    .arrow.right {
-      right: 0;
-    }
-
     button {
-      cursor: pointer;
-      padding: 0.6em 1em;
-      font-size: 1em;
-      border-radius: 0.5em;
+      padding: 1em 1.5em;
+      font-size: 1.3rem;
+      border-radius: 0.7em;
       border: none;
-      background: #ff6999;
+      background-color: #ff8ca1;
       color: white;
-      margin: 0.5em;
-      transition: background 0.3s ease;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      margin-top: 1em;
+      width: auto;
+      min-width: 180px;
+      display: inline-block;
+      user-select: none;
     }
-
-    button:hover:enabled {
-      background: #ff4d7a;
+    button:hover {
+      background-color: #ff4c70;
     }
-
-    button:disabled {
-      background: #ffb3c7;
-      cursor: not-allowed;
-    }
-
-    #removeSelectedBtn,
-    #clearAllBtn {
-      display: none; /* Hide by default */
-    }
-
-    .output {
-      margin-top: 2em;
-      font-size: 1.2em;
-    }
-
-    .milestone {
-      background: #fff5f8;
-      margin: 0.5em auto;
-      padding: 0.8em;
-      border-radius: 0.6em;
-      width: 80%;
-      max-width: 400px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      text-align: left;
-    }
-  </style>
-</head>
-<body>
-  <h1>💖 Everlove 💖</h1>
-
-  <div class="input-section">
-    <label for="startDate">Select your relationship start date:</label><br />
-    <input type="date" id="startDate" />
-  </div>
-
-  <div class="input-section">
-    <label for="addPhoto">Add a photo of you two:</label><br />
-    <input type="file" accept="image/*" id="addPhoto" />
-  </div>
-
-  <div class="carousel-wrapper">
-    <button class="arrow left" id="leftArrow">&#8592;</button>
-    <div class="carousel" id="photoCarousel"></div>
-    <button class="arrow right" id="rightArrow">&#8594;</button>
-  </div>
-
-  <div class="input-section">
-    <button id="removeSelectedBtn" disabled>🗑️ Remove Selected Photo</button>
-    <button id="clearAllBtn">🗑️ Remove All Photos</button>
-  </div>
-
-  <div class="output" id="output"></div>
-
-<script>
-  const startDateInput = document.getElementById('startDate');
-  const output = document.getElementById('output');
-  const addPhotoInput = document.getElementById('addPhoto');
-  const photoCarousel = document.getElementById('photoCarousel');
-  const removeSelectedBtn = document.getElementById('removeSelectedBtn');
-  const clearAllBtn = document.getElementById('clearAllBtn');
-  const leftArrow = document.getElementById('leftArrow');
-  const rightArrow = document.getElementById('rightArrow');
-
-  let currentIndex = 0;
-  let selectedIndex = -1;
-  let autoScrollInterval;
-
-  function updateControlsVisibility() {
-    const hasPhotos = photoCarousel.children.length > 0;
-    leftArrow.style.display = hasPhotos ? 'block' : 'none';
-    rightArrow.style.display = hasPhotos ? 'block' : 'none';
-    removeSelectedBtn.style.display = hasPhotos ? 'inline-block' : 'none';
-    clearAllBtn.style.display = hasPhotos ? 'inline-block' : 'none';
-
-    if (!hasPhotos) {
-      selectedIndex = -1;
-      removeSelectedBtn.disabled = true;
-    }
-  }
-
-  // Load saved start date
-  if(localStorage.getItem('everloveDate')){
-    startDateInput.value = localStorage.getItem('everloveDate');
-    calculateAnniversaries(new Date(startDateInput.value));
-  }
-
-  // Load saved photos
-  const savedPhotos = JSON.parse(localStorage.getItem('everlovePhotos') || '[]');
-  savedPhotos.forEach(src => addPhotoToCarousel(src));
-  updateControlsVisibility();
-
-  startDateInput.addEventListener('change', () => {
-    const date = new Date(startDateInput.value);
-    localStorage.setItem('everloveDate', startDateInput.value);
-    calculateAnniversaries(date);
-  });
-
-  addPhotoInput.addEventListener('change', () => {
-    const file = addPhotoInput.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = e => {
-      const src = e.target.result;
-      addPhotoToCarousel(src);
-      const updatedPhotos = JSON.parse(localStorage.getItem('everlovePhotos') || '[]');
-      updatedPhotos.push(src);
-      localStorage.setItem('everlovePhotos', JSON.stringify(updatedPhotos));
-      updateControlsVisibility();
-    };
-    reader.readAsDataURL(file);
-    addPhotoInput.value = ''; // reset input
-  });
-
-  removeSelectedBtn.addEventListener('click', () => {
-    if(selectedIndex < 0) return;
-    const photos = JSON.parse(localStorage.getItem('everlovePhotos') || '[]');
-    photos.splice(selectedIndex, 1);
-    localStorage.setItem('everlovePhotos', JSON.stringify(photos));
-    photoCarousel.children[selectedIndex].remove();
-    updateControlsVisibility();
-    if(photoCarousel.children.length > 0){
-      selectPhoto(photoCarousel.children[0]);
-    }
-  });
-
-  clearAllBtn.addEventListener('click', () => {
-    photoCarousel.innerHTML = '';
-    localStorage.removeItem('everlovePhotos');
-    updateControlsVisibility();
-  });
-
-  leftArrow.addEventListener('click', () => scrollCarousel(-1));
-  rightArrow.addEventListener('click', () => scrollCarousel(1));
-
-  function addPhotoToCarousel(src) {
-    const img = document.createElement('img');
-    img.src = src;
-    img.alt = 'Couple photo';
-    img.addEventListener('click', () => selectPhoto(img));
-    photoCarousel.appendChild(img);
-    if(photoCarousel.children.length === 1){
-      selectPhoto(img);
-    }
-  }
-
-  function selectPhoto(img) {
-    [...photoCarousel.children].forEach((child, i) => {
-      child.classList.remove('selected');
-      if(child === img) selectedIndex = i;
-    });
-    img.classList.add('selected');
-    removeSelectedBtn.disabled = false;
-    photoCarousel.scrollTo({ left: img.offsetLeft - (photoCarousel.offsetWidth - img.offsetWidth) / 2, behavior: 'smooth' });
-  }
-
-  function scrollCarousel(direction) {
-    const totalImages = photoCarousel.children.length;
-    if(totalImages === 0) return;
-    currentIndex = (currentIndex + direction + totalImages) % totalImages;
-    selectPhoto(photoCarousel.children[currentIndex]);
-  }
-
-  function startAutoScroll(){
-    if(autoScrollInterval) clearInterval(autoScrollInterval);
-    autoScrollInterval = setInterval(() => scrollCarousel(1), 12000);
-  }
-  startAutoScroll();
-
-  // Find the closest milestone <= value, and the next milestone > value, return which to show
-  function nextOrPassedMilestone(milestones, value) {
-    let passed = milestones.filter(m => m <= value);
-    let next = milestones.filter(m => m > value);
-
-    let milestoneToShow;
-    let isPassed;
-
-    if(passed.length > 0) {
-      milestoneToShow = Math.max(...passed);
-      isPassed = true;
-    } else if(next.length > 0) {
-      milestoneToShow = Math.min(...next);
-      isPassed = false;
-    } else {
-      // No milestones available - just return null
-      return null;
-    }
-
-    return { milestone: milestoneToShow, passed: isPassed };
-  }
-
-  function formatDate(startDate, count, unitDays) {
-    const date = new Date(startDate.getTime() + unitDays * count * 24 * 60 * 60 * 1000);
-    return date.toDateString();
-  }
-
-  function calculateAnniversaries(startDate) {
-    const now = new Date();
-    const diffTime = now - startDate;
-    const days = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-    const weeks = Math.floor(days / 7);
-    const months = Math.floor(days / 30.44);
-    const years = Math.floor(days / 365.25);
-
-    output.innerHTML = `
-      <p>You’ve been together for:</p>
-      <p><strong>${days} days</strong></p>
-      <p><strong>${weeks} weeks</strong></p>
-      <p><strong>${months} months</strong></p>
-      <p><strong>${years} years</strong></p>
-      <h3>Milestones:</h3>
-    `;
-
-    const milestones = [111,222,333,444,555,666,777,888,999];
-
-    // Days milestone
-    let dayMilestone = nextOrPassedMilestone(milestones, days);
-    if(dayMilestone){
-      if(dayMilestone.passed){
-        output.innerHTML += `<div class="milestone">🎉 ${dayMilestone.milestone} days anniversary passed!</div>`;
-      } else {
-        output.innerHTML += `<div class="milestone">📅 ${dayMilestone.milestone} days will be on <strong>${formatDate(startDate, dayMilestone.milestone, 1)}</strong></div>`;
-      }
-    }
-
-    // Weeks milestone
-    let weekMilestone = nextOrPassedMilestone(milestones, weeks);
-    if(weekMilestone){
-      if(weekMilestone.passed){
-        output.innerHTML += `<div class="milestone">🎉 ${weekMilestone.milestone} weeks anniversary passed!</div>`;
-      } else {
-        output.innerHTML += `<div class="milestone">📅 ${weekMilestone.milestone} weeks will be on <strong>${formatDate(startDate, weekMilestone.milestone, 7)}</strong></div>`;
-      }
-    }
-
-    // Months milestone
-    let monthMilestone = nextOrPassedMilestone(milestones, months);
-    if(monthMilestone){
-      if(monthMilestone.passed){
-        output.innerHTML += `<div class="milestone">🎉 ${monthMilestone.milestone} months anniversary passed!</div>`;
-      } else {
-        output.innerHTML += `<div class="milestone">📅 ${monthMilestone.milestone} months will be on <strong>${formatDate(startDate, monthMilestone.milestone, 30.44)}</strong></div>`;
-      }
-    }
-
-    // Years milestone
-    let yearMilestone = nextOrPassedMilestone(milestones, years);
-    if(yearMilestone){
-      if(yearMilestone.passed){
-        output.innerHTML += `<div class="milestone">🎉 ${yearMilestone.milestone} years anniversary passed!</div>`;
-      } else {
-        output.innerHTML += `<div class="milestone">📅 ${yearMilestone.milestone} years will be on <strong>${formatDate(startDate, yearMilestone.milestone, 365.25)}</strong></div>`;
-      }
-    }
-  }
-</script>
-</body>
-</html>
+    .carousel {
+      display
