@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Everlove - Choose Your Version</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #ffe3ec, #ffcad4);
+      color: #4a2e2e;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      text-align: center;
+      padding: 1em;
+    }
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 1em;
+    }
+    .btn {
+      background-color: #ff8ca1;
+      border: none;
+      border-radius: 12px;
+      color: white;
+      padding: 1.2em 3em;
+      font-size: 1.5rem;
+      margin: 0.8em;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(255,140,161,0.6);
+      transition: background-color 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+      user-select: none;
+    }
+    .btn:hover {
+      background-color: #ff4c70;
+    }
+    @media (max-width: 480px) {
+      .btn {
+        width: 80%;
+        font-size: 1.3rem;
+        padding: 1em 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Welcome to Everlove 💖</h1>
+  <a href="phone.html" class="btn" role="button" aria-label="Go to phone version">📱 Phone Version</a>
+  <a href="desktop.html" class="btn" role="button" aria-label="Go to desktop version">🖥️ Desktop Version</a>
+</body>
+</html>
