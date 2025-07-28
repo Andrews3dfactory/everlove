@@ -2,37 +2,31 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Everlove</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Everlove - Phone Version</title>
   <style>
-    /* Base styles */
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background: linear-gradient(135deg, #ffe3ec, #ffcad4);
       color: #4a2e2e;
       text-align: center;
-      padding: 2em 1em; /* add some horizontal padding for mobile */
+      padding: 2em 1em;
       margin: 0;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-      justify-content: flex-start;
       align-items: center;
     }
-
     h1 {
       font-size: 2.5rem;
       margin-bottom: 0.2em;
     }
-
     .input-section {
       margin: 1.5em 0;
       width: 100%;
       max-width: 400px;
     }
-
-    input[type="date"],
-    input[type="file"] {
+    input[type="date"], input[type="file"] {
       padding: 0.6em 0.8em;
       font-size: 1.1rem;
       border-radius: 0.5em;
@@ -40,7 +34,6 @@
       width: 100%;
       box-sizing: border-box;
     }
-
     button {
       padding: 0.8em 1.2em;
       font-size: 1.1rem;
@@ -57,7 +50,6 @@
     button:hover {
       background-color: #ff4c70;
     }
-
     .carousel {
       display: flex;
       overflow-x: auto;
@@ -67,13 +59,12 @@
       width: 100%;
       max-width: 420px;
       margin: 0 auto;
-      -webkit-overflow-scrolling: touch; /* smooth scrolling on iOS */
-      scrollbar-width: none; /* hide scrollbar Firefox */
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
     }
     .carousel::-webkit-scrollbar {
-      display: none; /* hide scrollbar Chrome/Safari */
+      display: none;
     }
-
     .carousel img {
       max-height: 180px;
       border-radius: 1em;
@@ -85,12 +76,10 @@
       object-fit: cover;
       box-shadow: 0 4px 8px rgba(0,0,0,0.15);
     }
-
     .carousel img.selected {
       border: 3px solid #ff4c70;
       transform: scale(1.1);
     }
-
     .output {
       margin-top: 2em;
       font-size: 1.1rem;
@@ -99,7 +88,6 @@
       text-align: center;
       line-height: 1.4;
     }
-
     .milestone {
       background: #fff5f8;
       margin: 0.5em auto;
@@ -109,34 +97,26 @@
       max-width: 400px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
-
-    /* Responsive text scaling */
     @media (max-width: 480px) {
       h1 {
         font-size: 2rem;
       }
-
-      input[type="date"],
-      input[type="file"] {
+      input[type="date"], input[type="file"] {
         font-size: 1rem;
       }
-
       button {
         font-size: 1rem;
         max-width: 100%;
       }
-
       .carousel img {
         width: 110px;
         max-height: 140px;
       }
-
       .milestone {
         width: 95%;
         padding: 0.6em;
         font-size: 0.95rem;
       }
-
       .output {
         font-size: 1rem;
       }
@@ -209,16 +189,14 @@
         updateRemoveButtonsVisibility();
       };
       reader.readAsDataURL(file);
-      this.value = ""; // reset input
+      this.value = "";
     });
 
     removeSelectedBtn.addEventListener('click', () => {
       if (!selectedPhoto) return;
       const src = selectedPhoto.src;
-      // Remove from carousel
       photoCarousel.removeChild(selectedPhoto);
       selectedPhoto = null;
-      // Remove from storage
       let photos = JSON.parse(localStorage.getItem("everlovePhotos") || "[]");
       photos = photos.filter(p => p !== src);
       localStorage.setItem("everlovePhotos", JSON.stringify(photos));
@@ -242,12 +220,12 @@
         selectedPhoto = img;
         img.classList.add('selected');
         updateRemoveButtonsVisibility();
+        centerScrollOn(img);
       });
       photoCarousel.appendChild(img);
       centerScrollOn(img);
     }
 
-    // Centers the scroll so selected image is in the middle
     function centerScrollOn(img) {
       const container = photoCarousel;
       const containerRect = container.getBoundingClientRect();
@@ -280,7 +258,6 @@
         <h3>Milestones:</h3>
       `;
 
-      // Show one milestone each for days, weeks, months, years
       const milestones = {
         days: [111, 222, 333, 444, 555, 666, 777, 888, 999],
         weeks: [16, 32, 48, 64, 80, 96, 112],
@@ -299,4 +276,27 @@
       const monthMilestone = getNextOrLastPassed(milestones.months, months);
       const yearMilestone = getNextOrLastPassed(milestones.years, years);
 
-      function milestoneHtml(type
+      function milestoneHtml(type, value, current, unit) {
+        if (current >= value) {
+          return `<div class="milestone">🎉 ${type} milestone of ${value} ${unit} passed!</div>`;
+        } else {
+          const msPerUnit = {
+            days: 86400000,
+            weeks: 7 * 86400000,
+            months: 30.44 * 86400000,
+            years: 365.25 * 86400000
+          };
+          const milestoneDate = new Date(startDate.getTime() + value * msPerUnit[type]);
+          return `<div class="milestone">📅 ${type} milestone of ${value} ${unit} will be on <strong>${milestoneDate.toDateString()}</strong></div>`;
+        }
+      }
+
+      output.innerHTML +=
+        milestoneHtml('Days', dayMilestone, days, 'days') +
+        milestoneHtml('Weeks', weekMilestone, weeks, 'weeks') +
+        milestoneHtml('Months', monthMilestone, months, 'months') +
+        milestoneHtml('Years', yearMilestone, years, 'years');
+    }
+  </script>
+</body>
+</html>
