@@ -28,5 +28,6 @@ Built with vanilla HTML, CSS, and JavaScript — no frameworks needed. Runs comp
 
 This project is open source under the MIT License.
 
-##link
+##Link
+
 https://andrews3dfactory.github.io/everlove/
